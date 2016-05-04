@@ -42,6 +42,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -543,6 +544,30 @@ public class FsCrawlerImplAllParametersTest extends AbstractMonoNodeITest {
         // We expect to have two files
         countTestHelper(getCrawlerName(), null, 2, currentTestResourceDir);
     }
+
+    @Test
+    public void test_add_new_file_with_old_date_before_scan_date() throws Exception {
+        startCrawler();
+
+        // We should have one doc first
+        countTestHelper(getCrawlerName(), null, 1, currentTestResourceDir);
+
+        logger.info(" ---> Adding a copy of roottxtfile.txt");
+
+        // We create a copy of a file and change the last modified date to the past
+        Path veryOldFile = currentTestResourceDir.resolve("new_roottxtfile.txt");
+
+        Files.copy(currentTestResourceDir.resolve("roottxtfile.txt"), veryOldFile);
+
+        FileTime dateInThePast = FileTime.fromMillis(0);
+        Files.setLastModifiedTime(veryOldFile, dateInThePast);
+
+        // We expect to have two files
+        countTestHelper(getCrawlerName(), null, 2, currentTestResourceDir);
+    }
+
+
+
 
     /**
      * Test case for issue #5: https://github.com/dadoonet/fscrawler/issues/5 : Support JSon documents
