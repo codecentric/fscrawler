@@ -304,22 +304,38 @@ public class FsCrawlerImpl {
             path.open();
 
             try {
+                final Collection<String> filesFromElasticsearch = getFileDirectory(filepath);
+                final Collection<FileAbstractModel> filesFromFilesystem = path.getFiles(filepath);
 
-                final Collection<FileAbstractModel> children = path.getFiles(filepath);
+                if(filesFromFilesystem.size() > REQUEST_SIZE){
+                    logger.error("Can't process more than {} files in one directory. This directory will not be correct reflected in elasticsearch, path={}", REQUEST_SIZE, filepath);
+                }
+
+                final Collection<FileAbstractModel> newFilesReadyForIndexing = filesNotInElasticsearch(filesFromFilesystem, filesFromElasticsearch);
+
+                for(FileAbstractModel fileToIndex : newFilesReadyForIndexing){
+                    if(FsCrawlerUtil.isIndexable(fileToIndex.name, fsSettings.getFs().getIncludes(), fsSettings.getFs().getExcludes())){
+                        indexFile(stats, fileToIndex.name, filepath, path.getInputStream(fileToIndex), fileToIndex.lastModifiedDate, fileToIndex.size);
+                        stats.addFile();
+                    }
+                }
+
                 Collection<String> fsFiles = new ArrayList<>();
                 Collection<String> fsFolders = new ArrayList<>();
 
-                if (children != null) {
-                    for (FileAbstractModel child : children) {
+                if (filesFromFilesystem != null) {
+                    for (FileAbstractModel child : filesFromFilesystem) {
                         String filename = child.name;
 
                         // https://github.com/dadoonet/fscrawler/issues/1 : Filter documents
                         boolean isIndexable = FsCrawlerUtil.isIndexable(filename, fsSettings.getFs().getIncludes(), fsSettings.getFs().getExcludes());
                         logger.debug("[{}] can be indexed: [{}]", filename, isIndexable);
+
                         if (isIndexable) {
                             if (child.file) {
                                 logger.debug("  - file: {}", filename);
                                 fsFiles.add(filename);
+
                                 if (lastScanDate == null
                                         || child.lastModifiedDate.isAfter(lastScanDate)
                                         || (child.creationDate != null && child.creationDate.isAfter(lastScanDate))) {
@@ -345,14 +361,28 @@ public class FsCrawlerImpl {
                 }
 
                 if (fsSettings.getFs().isRemoveDeleted()) {
-                    Collection<String> esFiles = getFileDirectory(filepath);
-                    removeDeletedFilesFromElasticsearch(filepath, esFiles, fsFiles);
+//                    Collection<String> esFiles = getFileDirectory(filepath);
+                    removeDeletedFilesFromElasticsearch(filepath, filesFromElasticsearch, fsFiles);
                     removeDeletedDirectoriesFromElasticsearch(filepath, fsFolders);
                 }
 
             } finally {
                 path.close();
             }
+        }
+
+        private Collection<FileAbstractModel> filesNotInElasticsearch(Collection<FileAbstractModel> filesFromFilesystem, Collection<String> filesInElasticsearch) {
+
+            Collection<FileAbstractModel> filesNotInElasticsearch = new ArrayList<>();
+
+            for(FileAbstractModel file : filesFromFilesystem){
+
+                if(file.file && !filesInElasticsearch.contains(file.name)){
+                    filesNotInElasticsearch.add(file);
+                }
+            }
+
+            return filesNotInElasticsearch;
         }
 
         private void removeDeletedDirectoriesFromElasticsearch(String filepath, Collection<String> fsFolders) throws Exception {
