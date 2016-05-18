@@ -47,7 +47,7 @@ public abstract class AbstractFSCrawlerTest {
     }
 
     public static boolean awaitBusy(BooleanSupplier breakSupplier) throws InterruptedException {
-        return awaitBusy(breakSupplier, 5, TimeUnit.SECONDS);
+        return awaitBusy(breakSupplier, 10, TimeUnit.SECONDS);
     }
 
     // After 1s, we stop growing the sleep interval exponentially and just sleep 1s until maxWaitTime
@@ -57,7 +57,9 @@ public abstract class AbstractFSCrawlerTest {
         long maxTimeInMillis = TimeUnit.MILLISECONDS.convert(maxWaitTime, unit);
         long timeInMillis = 1;
         long sum = 0;
+
         while (sum + timeInMillis < maxTimeInMillis) {
+
             if (breakSupplier.getAsBoolean()) {
                 return true;
             }
@@ -65,6 +67,7 @@ public abstract class AbstractFSCrawlerTest {
             sum += timeInMillis;
             timeInMillis = Math.min(AWAIT_BUSY_THRESHOLD, timeInMillis * 2);
         }
+
         timeInMillis = maxTimeInMillis - sum;
         Thread.sleep(Math.max(timeInMillis, 0));
         return breakSupplier.getAsBoolean();
