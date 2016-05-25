@@ -4,17 +4,168 @@ This repo is a fork of dadoonet/fscrawler. Many thanks to David Pilato for his g
 This crawler helps to index documents from your local file system and over SSH.
 It crawls your file system and index new files, update existing ones and removes old ones.
 
-## Versions
+## Version
+df
 | Elasticsearch |  FS Crawler |
 |---------------|-------------|
 |         2.3.1 |       2.3.0 |
+
+
+# Download fscrawler
+
+FS Crawler binary is available on [Maven Central](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/).
+Just download the latest release (or any other specific version you want to try).
+
+The filename ends with `.zip`.
+
+For example, if you wish to download [fscrawler-2.0.0](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip):
+
+```sh
+wget https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip
+unzip fscrawler-2.0.0.zip
+```
+
+The distribution contains:
+
+```
+$ tree
+.
+├── LICENSE
+├── NOTICE
+├── README.md
+├── bin
+│   ├── fscrawler
+│   └── fscrawler.bat
+└── lib
+    ├── ... All needed jars
+```
+
+
+# Download fscrawler
+
+FS Crawler binary is available on [Maven Central](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/).
+Just download the latest release (or any other specific version you want to try).
+
+The filename ends with `.zip`.
+
+For example, if you wish to download [fscrawler-2.0.0](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip):
+
+```sh
+wget https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip
+unzip fscrawler-2.0.0.zip
+```
+
+The distribution contains:
+
+```
+$ tree
+.
+├── LICENSE
+├── NOTICE
+├── README.md
+├── bin
+│   ├── fscrawler
+│   └── fscrawler.bat
+└── lib
+    ├── ... All needed jars
+```
+
+
+# Download fscrawler
+
+FS Crawler binary is available on [Maven Central](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/).
+Just download the latest release (or any other specific version you want to try).
+
+The filename ends with `.zip`.
+
+For example, if you wish to download [fscrawler-2.0.0](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip):
+
+```sh
+wget https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip
+unzip fscrawler-2.0.0.zip
+```
+
+The distribution contains:
+
+```
+$ tree
+.
+├── LICENSE
+├── NOTICE
+├── README.md
+├── bin
+│   ├── fscrawler
+│   └── fscrawler.bat
+└── lib
+    ├── ... All needed jars
+```
+
+
+# Download fscrawler
+
+FS Crawler binary is available on [Maven Central](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/).
+Just download the latest release (or any other specific version you want to try).
+
+The filename ends with `.zip`.
+
+For example, if you wish to download [fscrawler-2.0.0](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip):
+
+```sh
+wget https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip
+unzip fscrawler-2.0.0.zip
+```
+
+The distribution contains:
+
+```
+$ tree
+.
+├── LICENSE
+├── NOTICE
+├── README.md
+├── bin
+│   ├── fscrawler
+│   └── fscrawler.bat
+└── lib
+    ├── ... All needed jars
+```
+
+
+# Download fscrawler
+
+FS Crawler binary is available on [Maven Central](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/).
+Just download the latest release (or any other specific version you want to try).
+
+The filename ends with `.zip`.
+
+For example, if you wish to download [fscrawler-2.0.0](https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip):
+
+```sh
+wget https://repo1.maven.org/maven2/fr/pilato/elasticsearch/crawler/fscrawler/2.0.0/fscrawler-2.0.0.zip
+unzip fscrawler-2.0.0.zip
+```
+
+The distribution contains:
+
+```
+$ tree
+.
+├── LICENSE
+├── NOTICE
+├── README.md
+├── bin
+│   ├── fscrawler
+│   └── fscrawler.bat
+└── lib
+    ├── ... All needed jars
+```
 
 # Getting Started
 
 **You need to have at least Java 1.8.**
 
 ```sh
-fscrawler job_name
+bin/fscrawler job_name
 ```
 
 FS crawler will read a local file (default to `~/.fscrawler/{job_name}.json`).
@@ -33,7 +184,7 @@ If needed, you can manually edit / remove those files to restart.
 You can also run:
 
 ```sh
-fscrawler
+bin/fscrawler
 ```
 
 It will give you the list of existing jobs and will allow you to choose one.
@@ -526,6 +677,20 @@ When the FS crawler detects a new type, it creates automatically a mapping for t
               "index" : "not_analyzed"
           }
         }
+      },
+      "attributes": {
+        "properties": {
+          "owner": {
+              "type" : "string",
+              "store" : "yes",
+              "index" : "not_analyzed"
+          },
+          "group": {
+              "type" : "string",
+              "store" : "yes",
+              "index" : "not_analyzed"
+          }
+        }
       }
     }
   }
@@ -632,6 +797,20 @@ PUT docs/doc/_mapping
               "index" : "not_analyzed"
           }
         }
+      },
+      "attributes": {
+        "properties": {
+          "group": {
+              "type" : "string",
+              "store" : "yes",
+              "index" : "not_analyzed"
+          },
+          "owner": {
+              "type" : "string",
+              "store" : "yes",
+              "index" : "not_analyzed"
+          }
+        }
       }
     }
   }
@@ -661,6 +840,9 @@ FS crawler creates the following fields :
 | `path.virtual`       | Relative path from root path                | `"mydir/otherdir"`                          |
 | `path.root`          | MD5 encoded root path (for internal use)    | `"112aed83738239dbfe4485f024cd4ce1"`        |
 | `path.real`          | Actual real path name                       | `"/tmp/mydir/otherdir/mydocument.pdf"`      |
+| `attributes.owner`   | Owner name                                  | `"david"`                                   |
+| `attributes.group`   | Group name                                  | `"staff"`                                   |
+
 
 Here is a typical JSON document generated by the crawler:
 
@@ -680,6 +862,10 @@ Here is a typical JSON document generated by the crawler:
       "root":"bceb3913f6d793e915beb70a4735592",
       "virtual":"",
       "real":"/tmp/testfs_metadata/test.odt"
+   },
+   "attributes": {
+      "owner": "david",
+      "group": "staff"
    },
    "meta":{
       "author":"David Pilato",
