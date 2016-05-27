@@ -11,7 +11,8 @@
         "remove_deleted": true,
         "store_source": false,
         "index_content": true,
-        "indexed_chars": null
+        "indexed_chars": null,
+        "attributes_support" : false
     },
     "server": null,
     "elasticsearch": {
