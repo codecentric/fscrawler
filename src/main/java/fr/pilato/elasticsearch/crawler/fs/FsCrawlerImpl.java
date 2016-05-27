@@ -213,6 +213,8 @@ public class FsCrawlerImpl {
                     return;
                 }
 
+                FileAbstractor path = null;
+
                 try {
                     stats = new ScanStatistic(fsSettings.getFs().getUrl());
 
@@ -233,11 +235,24 @@ public class FsCrawlerImpl {
                         indexRootDirectory(directory);
                     }
 
-                    addFilesRecursively(fsSettings.getFs().getUrl(), scanDate);
+                    path = buildFileAbstractor();
+                    path.open();
+
+                    addFilesRecursively(path, fsSettings.getFs().getUrl(), scanDate);
 
                     updateFsJob(fsSettings.getName(), scanDatenew);
                 } catch (Exception e) {
-                    logger.warn("Error while indexing content from {}", fsSettings.getFs().getUrl(), e);
+                    logger.warn("Error while indexing content from {}", fsSettings.getFs().getUrl());
+                    logger.debug("", e);
+                } finally {
+                    if (path != null) {
+                        try {
+                            path.close();
+                        } catch (Exception e) {
+                            logger.warn("Error while closing the connection: {}", e.getMessage());
+                            logger.debug("", e);
+                        }
+                    }
                 }
 
                 try {
@@ -297,12 +312,10 @@ public class FsCrawlerImpl {
                     PROTOCOL.LOCAL + " or " + PROTOCOL.SSH);
         }
 
-        private void addFilesRecursively(String filepath, Instant lastScanDate)
+        private void addFilesRecursively(FileAbstractor path, String filepath, Instant lastScanDate)
                 throws Exception {
 
             logger.debug("indexing [{}] content", filepath);
-            FileAbstractor path = buildFileAbstractor();
-            path.open();
 
             try {
                 final Collection<String> filesFromElasticsearch = getFileDirectory(filepath);
@@ -350,7 +363,7 @@ public class FsCrawlerImpl {
                                 logger.debug("  - folder: {}", filename);
                                 fsFolders.add(filename);
                                 indexDirectory(stats, filename, child.fullpath.concat(File.separator));
-                                addFilesRecursively(child.fullpath.concat(File.separator), lastScanDate);
+                                addFilesRecursively(path, child.fullpath.concat(File.separator), lastScanDate);
                             } else {
                                 logger.debug("  - other: {}", filename);
                                 logger.debug("Not a file nor a dir. Skipping {}", child.fullpath);
