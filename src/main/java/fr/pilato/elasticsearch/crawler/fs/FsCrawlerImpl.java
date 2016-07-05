@@ -486,11 +486,11 @@ public class FsCrawlerImpl {
 
         private String getName(Object nameObject) {
 
-            if(nameObject instanceof List){
-                return String.valueOf (((List) nameObject).get(0));
+            if (nameObject instanceof List) {
+                return String.valueOf(((List) nameObject).get(0));
             }
 
-            throw new RuntimeException("search result, file.name not of type List<String>");
+            throw new RuntimeException("search result, " + FILE_FILENAME + " not of type List<String>");
         }
 
         private Collection<String> getFolderDirectory(String path)
