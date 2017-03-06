@@ -1,7 +1,7 @@
 {
     "name": "search",
     "fs": {
-        "url": "/opt/fscrawler/data",
+        "url": "/opt/fscrawler/data_provi",
         "update_rate": "1m",
         "includes": null,
         "excludes": null,
